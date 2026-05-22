@@ -1,15 +1,16 @@
-import { useNotchState } from '@notch/features/notch-pill/hooks/useNotchState';
-import { TypographySmall } from '@shared/components/typography';
+import { useRecordingController } from '@notch/features/dictation-pipeline';
+import { IdleState } from '@notch/features/notch-pill/components/IdleState';
+import { RecordingState } from '@notch/features/notch-pill/components/RecordingState';
+import { PostProcessingState } from '@notch/features/notch-pill/components/PostProcessingState';
 
 export function NotchPill() {
-  const { phase } = useNotchState();
+  const { phase, toggleRecording } = useRecordingController();
 
   return (
-    <div className="flex h-full w-full items-center justify-center px-3">
-      <div className="bg-card/85 text-card-foreground ring-border flex h-7 items-center gap-2 rounded-full px-3 backdrop-blur-md ring-1">
-        <span className="bg-primary size-2 rounded-full" aria-hidden />
-        <TypographySmall>{phase === 'idle' ? 'Mindlr' : phase}</TypographySmall>
-      </div>
+    <div className="flex h-full w-full items-center justify-center p-1">
+      {phase === 'idle' ? <IdleState onStart={toggleRecording} /> : null}
+      {phase === 'recording' ? <RecordingState onStop={toggleRecording} /> : null}
+      {phase === 'post-processing' ? <PostProcessingState /> : null}
     </div>
   );
 }

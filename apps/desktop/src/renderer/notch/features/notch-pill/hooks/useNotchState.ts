@@ -6,11 +6,10 @@ export type Theme = 'light' | 'dark';
 const DEFAULT_THEME: Theme = 'dark';
 const THEME_KEY = 'theme';
 
-export type NotchPhase = 'idle' | 'recording' | 'post-processing';
-
 /**
- * Phase 1: notch is always idle. Reads theme so it reacts to settings changes.
- * Phases 3+: subscribes to recording state from main process.
+ * Reads cross-window theme so the notch repaints when the user toggles it in
+ * Settings. The recording phase lives in a Jotai atom (atoms.ts) — components
+ * read it directly via `useAtomValue(recordingPhaseAtom)`.
  */
 export function useNotchState() {
   const themeQuery = useQuery({
@@ -29,8 +28,5 @@ export function useNotchState() {
     staleTime: Infinity,
   });
 
-  return {
-    theme: themeQuery.data ?? DEFAULT_THEME,
-    phase: 'idle' as NotchPhase,
-  };
+  return { theme: themeQuery.data ?? DEFAULT_THEME };
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from '@shared/components/ui/sonner';
 import { NotchPill, useNotchState } from '@notch/features/notch-pill';
 import { useDbChangeSync } from '@shared/db/useDbChangeSync';
 
@@ -32,6 +33,7 @@ export default function App() {
       <DbSyncBridge />
       <ThemeApplier />
       <NotchPill />
+      <Toaster richColors position="top-center" />
     </QueryClientProvider>
   );
 }

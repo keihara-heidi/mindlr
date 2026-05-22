@@ -2,6 +2,10 @@ import { env, pipeline } from '@huggingface/transformers';
 
 interface DevApi {
   testInference: (repoId: string) => Promise<unknown>;
+  fetchModelFile: (
+    repoId: string,
+    path: string,
+  ) => Promise<{ status: number; bytes: number; firstBytes: number[]; contentType: string | null }>;
 }
 
 declare global {
@@ -35,6 +39,14 @@ export function installDevHelpers(): void {
       // 3 s of silence at 16 kHz mono.
       const silent = new Float32Array(16000 * 3);
       return asr(silent, { return_timestamps: 'word', chunk_length_s: 30 });
+    },
+    fetchModelFile: async (repoId: string, path: string) => {
+      const url = `app://models/${repoId}/${path}`;
+      const r = await fetch(url);
+      const ct = r.headers.get('content-type');
+      const b = await r.arrayBuffer();
+      const firstBytes = Array.from(new Uint8Array(b, 0, Math.min(8, b.byteLength)));
+      return { status: r.status, bytes: b.byteLength, firstBytes, contentType: ct };
     },
   };
 
