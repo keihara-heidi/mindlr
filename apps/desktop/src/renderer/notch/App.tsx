@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { NotchPill, useNotchState } from './features/notch-pill';
+import { NotchPill, useNotchState } from '@notch/features/notch-pill';
 import { useDbChangeSync } from '@shared/db/useDbChangeSync';
 
 function DbSyncBridge() {

@@ -1,4 +1,4 @@
-import type { MindlrApi } from './settings';
+import type { MindlrApi } from '@preload/settings';
 
 declare global {
   interface Window {

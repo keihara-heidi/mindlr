@@ -1,5 +1,5 @@
-import { ThemeToggle } from './ThemeToggle';
-import { useQueryTheme } from '../hooks/useQueryTheme';
+import { ThemeToggle } from '@settings/features/app-settings/components/ThemeToggle';
+import { useQueryTheme } from '@settings/features/app-settings/hooks/useQueryTheme';
 import {
   TypographyH2,
   TypographyMuted,

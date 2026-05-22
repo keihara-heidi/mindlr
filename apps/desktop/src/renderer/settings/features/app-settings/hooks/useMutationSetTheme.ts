@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { getDbClient } from '@shared/db/ipcClient';
 import { dbKeys } from '@shared/db/queryKeys';
-import { type Theme, THEME_KEY } from './useQueryTheme';
+import { type Theme, THEME_KEY } from '@settings/features/app-settings/hooks/useQueryTheme';
 
 interface MutationContext {
   previous: Theme | undefined;

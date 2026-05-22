@@ -9,7 +9,7 @@ import {
   type TableName,
 } from '@mindlr/ipc-contracts';
 import { TABLES } from '@mindlr/db-schema';
-import { getSqlite } from '../db/client.js';
+import { getSqlite } from '@main/db/client.js';
 
 const SQL_TABLE_NAMES: Record<TableName, string> = {
   settings: 'settings',

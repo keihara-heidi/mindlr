@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { getDbClient } from './ipcClient';
-import { dbKeys } from './queryKeys';
+import { getDbClient } from '@shared/db/ipcClient';
+import { dbKeys } from '@shared/db/queryKeys';
 
 /**
  * Subscribes to main-process `db.change` events and invalidates matching

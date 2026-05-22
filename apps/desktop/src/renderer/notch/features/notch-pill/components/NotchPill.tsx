@@ -1,4 +1,4 @@
-import { useNotchState } from '../hooks/useNotchState';
+import { useNotchState } from '@notch/features/notch-pill/hooks/useNotchState';
 import { TypographySmall } from '@shared/components/typography';
 
 export function NotchPill() {
