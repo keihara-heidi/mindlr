@@ -1,0 +1,30 @@
+appId: com.mindlr.desktop
+productName: Mindlr
+directories:
+  output: release
+  buildResources: build
+files:
+  - out/**/*
+  - package.json
+asarUnpack:
+  - node_modules/better-sqlite3/**
+mac:
+  category: public.app-category.productivity
+  target:
+    - target: dmg
+      arch: arm64
+    - target: zip
+      arch: arm64
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.plist
+  identity: null
+dmg:
+  contents:
+    - x: 130
+      y: 220
+    - x: 410
+      y: 220
+      type: link
+      path: /Applications
