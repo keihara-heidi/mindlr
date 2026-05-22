@@ -1,15 +1,22 @@
 import { Outlet, Link, createRootRoute } from '@tanstack/react-router';
-import { useEffect } from 'react';
+import { useEffect, type ComponentType } from 'react';
+import { Boxes, Clock, Keyboard, Sliders } from 'lucide-react';
 import { useQueryTheme } from '@settings/features/app-settings';
 import { TypographySmall } from '@shared/components/typography';
 import { cn } from '@shared/lib/utils';
 
-const NAV = [
-  { to: '/', label: 'General' },
-  { to: '/models', label: 'Models' },
-  { to: '/hotkeys', label: 'Hotkeys' },
-  { to: '/history', label: 'History' },
-] as const;
+interface NavItem {
+  to: '/' | '/models' | '/hotkeys' | '/history';
+  label: string;
+  Icon: ComponentType<{ className?: string }>;
+}
+
+const NAV: readonly NavItem[] = [
+  { to: '/', label: 'General', Icon: Sliders },
+  { to: '/models', label: 'Models', Icon: Boxes },
+  { to: '/hotkeys', label: 'Hotkeys', Icon: Keyboard },
+  { to: '/history', label: 'History', Icon: Clock },
+];
 
 function RootLayout() {
   const { data: theme } = useQueryTheme();
@@ -26,15 +33,16 @@ function RootLayout() {
         <div className="text-muted-foreground px-2 pb-3 text-xs font-semibold tracking-wider uppercase">
           Mindlr
         </div>
-        {NAV.map((item) => (
+        {NAV.map(({ to, label, Icon }) => (
           <Link
-            key={item.to}
-            to={item.to}
+            key={to}
+            to={to}
             activeProps={{ className: 'bg-sidebar-accent text-sidebar-accent-foreground' }}
             inactiveProps={{ className: 'text-muted-foreground hover:bg-sidebar-accent/60' }}
-            className={cn('rounded-md px-3 py-1.5')}
+            className={cn('flex items-center gap-2 rounded-md px-3 py-1.5')}
           >
-            <TypographySmall>{item.label}</TypographySmall>
+            <Icon className="size-4" />
+            <TypographySmall>{label}</TypographySmall>
           </Link>
         ))}
       </aside>
