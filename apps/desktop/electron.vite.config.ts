@@ -56,6 +56,11 @@ export default defineConfig({
     preview: {
       headers: coopCoepHeaders,
     },
+    worker: {
+      // Default is `iife`, which forbids code-splitting. Our dictation
+      // workers import transformers.js + Dexie which need their own chunks.
+      format: 'es',
+    },
     build: {
       rollupOptions: {
         input: {
