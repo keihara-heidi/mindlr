@@ -44,7 +44,17 @@ export function createNotchWindow(): BrowserWindow {
   win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   win.setIgnoreMouseEvents(false);
 
-  win.once('ready-to-show', () => win.show());
+  win.once('ready-to-show', () => {
+    win.show();
+    if (process.env.ELECTRON_RENDERER_URL) win.webContents.openDevTools({ mode: 'detach' });
+  });
+
+  win.webContents.on('did-fail-load', (_e, code, desc, url) => {
+    console.error(`[notch] did-fail-load ${code} ${desc} ${url}`);
+  });
+  win.webContents.on('render-process-gone', (_e, details) => {
+    console.error('[notch] render-process-gone', details);
+  });
 
   if (process.env.ELECTRON_RENDERER_URL) {
     void win.loadURL(`${process.env.ELECTRON_RENDERER_URL}/notch/index.html`);
