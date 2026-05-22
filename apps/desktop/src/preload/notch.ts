@@ -7,6 +7,7 @@ import type {
   DbChangeEvent,
   ModelsListCatalogResponse,
   ModelsProgressEvent,
+  RecordingStartResponse,
 } from '@mindlr/ipc-contracts';
 
 // Inlined to keep this preload self-contained (Electron sandboxed preloads
@@ -20,9 +21,15 @@ const CHANNEL_MODELS_DOWNLOAD_START = 'models.download.start';
 const CHANNEL_MODELS_DOWNLOAD_CANCEL = 'models.download.cancel';
 const CHANNEL_MODELS_DELETE = 'models.delete';
 const CHANNEL_MODELS_PROGRESS = 'models.progress';
+const CHANNEL_RECORDING_START = 'recording.start';
+const CHANNEL_RECORDING_STOP = 'recording.stop';
+const CHANNEL_AUDIO_FRAME = 'audio.frame';
+const CHANNEL_NOTCH_RESIZE = 'notch.resize';
 
 type DbChangeListener = (event: DbChangeEvent) => void;
 type ModelsProgressListener = (event: ModelsProgressEvent) => void;
+type AudioFrameListener = (payload: { sampleRate: number; samples: ArrayBuffer }) => void;
+type NotchPhase = 'idle' | 'recording' | 'post-processing';
 
 const api = {
   db: {
@@ -51,6 +58,21 @@ const api = {
       ipcRenderer.on(CHANNEL_MODELS_PROGRESS, wrapped);
       return () => ipcRenderer.off(CHANNEL_MODELS_PROGRESS, wrapped);
     },
+  },
+  recording: {
+    start: (): Promise<RecordingStartResponse> => ipcRenderer.invoke(CHANNEL_RECORDING_START, {}),
+    stop: (): Promise<{ stopped: boolean }> => ipcRenderer.invoke(CHANNEL_RECORDING_STOP, {}),
+    onAudioFrame: (listener: AudioFrameListener): (() => void) => {
+      const wrapped = (
+        _e: Electron.IpcRendererEvent,
+        payload: { sampleRate: number; samples: ArrayBuffer },
+      ) => listener(payload);
+      ipcRenderer.on(CHANNEL_AUDIO_FRAME, wrapped);
+      return () => ipcRenderer.off(CHANNEL_AUDIO_FRAME, wrapped);
+    },
+  },
+  notch: {
+    resize: (phase: NotchPhase): Promise<void> => ipcRenderer.invoke(CHANNEL_NOTCH_RESIZE, { phase }),
   },
 } as const;
 
