@@ -1,0 +1,4 @@
+{
+  "setup": "bash scripts/setup.sh",
+  "run": "bash scripts/dev.sh"
+}
