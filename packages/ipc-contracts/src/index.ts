@@ -53,8 +53,56 @@ export const DbChangeEventSchema = z.object({
 });
 export type DbChangeEvent = z.infer<typeof DbChangeEventSchema>;
 
+export const ModelCatalogEntrySchema = z.object({
+  repoId: z.string(),
+  displayName: z.string(),
+  files: z.array(z.string()),
+  sizeMb: z.number().optional(),
+  recommended: z.boolean().optional(),
+});
+export type ModelCatalogEntry = z.infer<typeof ModelCatalogEntrySchema>;
+
+export const ModelsListCatalogResponseSchema = z.object({
+  entries: z.array(ModelCatalogEntrySchema),
+  source: z.enum(['hub', 'cache', 'fallback']),
+});
+export type ModelsListCatalogResponse = z.infer<typeof ModelsListCatalogResponseSchema>;
+
+export const ModelsDownloadStartRequestSchema = z.object({ repoId: z.string() });
+export type ModelsDownloadStartRequest = z.infer<typeof ModelsDownloadStartRequestSchema>;
+
+export const ModelsDownloadCancelRequestSchema = z.object({ repoId: z.string() });
+export type ModelsDownloadCancelRequest = z.infer<typeof ModelsDownloadCancelRequestSchema>;
+
+export const ModelsDeleteRequestSchema = z.object({ repoId: z.string() });
+export type ModelsDeleteRequest = z.infer<typeof ModelsDeleteRequestSchema>;
+
+export const ModelsProgressPhaseSchema = z.enum([
+  'probing',
+  'downloading',
+  'done',
+  'error',
+  'canceled',
+]);
+export type ModelsProgressPhase = z.infer<typeof ModelsProgressPhaseSchema>;
+
+export const ModelsProgressEventSchema = z.object({
+  repoId: z.string(),
+  totalDownloaded: z.number().int().nonnegative(),
+  totalBytes: z.number().int().nonnegative(),
+  currentFile: z.string(),
+  phase: ModelsProgressPhaseSchema,
+  error: z.string().optional(),
+});
+export type ModelsProgressEvent = z.infer<typeof ModelsProgressEventSchema>;
+
 export const IPC_CHANNELS = {
   dbQuery: 'db.query',
   dbMutate: 'db.mutate',
   dbChange: 'db.change',
+  modelsListCatalog: 'models.listCatalog',
+  modelsDownloadStart: 'models.download.start',
+  modelsDownloadCancel: 'models.download.cancel',
+  modelsDelete: 'models.delete',
+  modelsProgress: 'models.progress',
 } as const;
