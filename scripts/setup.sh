@@ -34,6 +34,18 @@ bun install
 echo "[setup] electron-builder install-app-deps (native rebuild for Electron ABI)"
 (cd apps/desktop && node ./node_modules/.bin/electron-builder install-app-deps)
 
+# 2b. Manually rebuild segfault-handler.
+#     It's a transitive native dep of naudiodon2 but ships without
+#     `gypfile: true` in its package.json, so @electron/rebuild's auto-detect
+#     skips it. Without this its prebuilt .node mismatches Electron's
+#     NODE_MODULE_VERSION and the main process crashes on startup.
+SEG_DIR=$(node -e "console.log(require('path').dirname(require.resolve('segfault-handler/package.json', { paths: ['$ROOT/apps/desktop'] })))" 2>/dev/null || true)
+if [ -n "$SEG_DIR" ] && [ -f "$SEG_DIR/binding.gyp" ]; then
+  echo "[setup] node-gyp rebuild segfault-handler @ $SEG_DIR"
+  (cd "$SEG_DIR" && npx --yes node-gyp rebuild --target=33.4.11 --arch=arm64 --dist-url=https://electronjs.org/headers >/dev/null 2>&1) || \
+    echo "[setup] segfault-handler rebuild failed (non-fatal — only matters if naudiodon2 loads it)"
+fi
+
 # 3. Generate the TanStack Router route tree (so tsc + IDE both see it).
 echo "[setup] generate TanStack Router route tree"
 (cd apps/desktop && node ./node_modules/.bin/tsr generate)
