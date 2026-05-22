@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { TypographyMuted } from '@shared/components/typography';
+import { ModelsPage } from '@settings/features/models';
 
 export const Route = createFileRoute('/models')({
-  component: () => <TypographyMuted>Models — coming in Phase 2.</TypographyMuted>,
+  component: ModelsPage,
 });

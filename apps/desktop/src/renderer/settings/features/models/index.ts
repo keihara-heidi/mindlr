@@ -1,2 +1,1 @@
-// Phase 2 — model download, list, delete.
-export {};
+export { ModelsPage } from '@settings/features/models/components/ModelsPage';
