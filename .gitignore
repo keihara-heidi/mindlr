@@ -1,0 +1,30 @@
+node_modules/
+dist/
+out/
+build/
+.DS_Store
+*.log
+.env
+.env.local
+.env.*.local
+
+# Electron
+release/
+*.app
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Bun
+.bun/
+
+# TS
+*.tsbuildinfo
+
+# Drizzle
+drizzle/
+
+# OS
+Thumbs.db
