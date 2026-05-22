@@ -96,6 +96,34 @@ export const ModelsProgressEventSchema = z.object({
 });
 export type ModelsProgressEvent = z.infer<typeof ModelsProgressEventSchema>;
 
+export const RecordingStartRequestSchema = z.object({});
+export type RecordingStartRequest = z.infer<typeof RecordingStartRequestSchema>;
+
+export const RecordingStopRequestSchema = z.object({});
+export type RecordingStopRequest = z.infer<typeof RecordingStopRequestSchema>;
+
+export const RecordingStartResponseSchema = z.object({
+  started: z.boolean(),
+  sampleRate: z.number().int().positive(),
+  error: z.string().optional(),
+});
+export type RecordingStartResponse = z.infer<typeof RecordingStartResponseSchema>;
+
+/**
+ * Sent alongside an ArrayBuffer of Float32 PCM samples (mono) via
+ * webContents.send(IPC_CHANNELS.audioFrame, { sampleRate, samples: ArrayBuffer }).
+ * The samples are zero-copy-friendly (the ArrayBuffer is structured-cloned).
+ */
+export const AudioFrameEventSchema = z.object({
+  sampleRate: z.number().int().positive(),
+});
+export type AudioFrameEvent = z.infer<typeof AudioFrameEventSchema>;
+
+export const NotchResizeRequestSchema = z.object({
+  phase: z.enum(['idle', 'recording', 'post-processing']),
+});
+export type NotchResizeRequest = z.infer<typeof NotchResizeRequestSchema>;
+
 export const IPC_CHANNELS = {
   dbQuery: 'db.query',
   dbMutate: 'db.mutate',
@@ -105,4 +133,8 @@ export const IPC_CHANNELS = {
   modelsDownloadCancel: 'models.download.cancel',
   modelsDelete: 'models.delete',
   modelsProgress: 'models.progress',
+  recordingStart: 'recording.start',
+  recordingStop: 'recording.stop',
+  audioFrame: 'audio.frame',
+  notchResize: 'notch.resize',
 } as const;
