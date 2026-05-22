@@ -1,6 +1,7 @@
 import { ipcMain } from 'electron';
 import { IPC_CHANNELS } from '@mindlr/ipc-contracts';
-import { registerDbHandlers, unregisterDbHandlers } from './db.js';
+import { registerDbHandlers, unregisterDbHandlers } from '@main/ipc/db.js';
+import { registerModelsHandlers, unregisterModelsHandlers } from '@main/ipc/models.js';
 
 let _registered = false;
 
@@ -8,11 +9,14 @@ export function registerIpcHandlers(): void {
   if (_registered) return;
   _registered = true;
   registerDbHandlers();
+  registerModelsHandlers();
 }
 
 export function unregisterIpcHandlers(): void {
   if (!_registered) return;
   _registered = false;
   unregisterDbHandlers();
+  unregisterModelsHandlers();
   ipcMain.removeAllListeners(IPC_CHANNELS.dbChange);
+  ipcMain.removeAllListeners(IPC_CHANNELS.modelsProgress);
 }

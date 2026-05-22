@@ -1,15 +1,23 @@
 import { app, BrowserWindow } from 'electron';
-import { initDb } from './db/client.js';
-import { registerIpcHandlers } from './ipc/index.js';
-import { createSettingsWindow } from './windows/settingsWindow.js';
-import { createNotchWindow } from './windows/notchWindow.js';
+import { initDb } from '@main/db/client.js';
+import { registerIpcHandlers } from '@main/ipc/index.js';
+import {
+  registerAppProtocol,
+  registerAppProtocolPrivileges,
+} from '@main/protocol/appProtocol.js';
+import { createSettingsWindow } from '@main/windows/settingsWindow.js';
+import { createNotchWindow } from '@main/windows/notchWindow.js';
 
 app.setName('Mindlr');
+
+// Privileges must be registered before whenReady.
+registerAppProtocolPrivileges();
 
 async function bootstrap() {
   await app.whenReady();
 
   initDb();
+  registerAppProtocol();
   registerIpcHandlers();
 
   createNotchWindow();
