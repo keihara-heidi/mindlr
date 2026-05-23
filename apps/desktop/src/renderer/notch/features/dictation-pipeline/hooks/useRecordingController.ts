@@ -180,7 +180,10 @@ export function useRecordingController() {
 
     setSessionId((s) => s + 1);
     setPhase('recording');
-    void getNotchApi().resize('recording');
+    // Reposition the notch window to the display the user is currently on
+    // (proxy: cursor location). The window itself stays a fixed size; only
+    // the inner pill animates between phases via Tailwind transitions.
+    void getNotchApi().followActiveDisplay();
   }, [
     ensureWorkers,
     readActiveModelRepoId,
@@ -196,7 +199,6 @@ export function useRecordingController() {
     const { producer, consumer, batch } = workersRef.current;
 
     setPhase('post-processing');
-    void getNotchApi().resize('post-processing');
 
     audioUnsubRef.current?.();
     audioUnsubRef.current = null;
@@ -237,7 +239,6 @@ export function useRecordingController() {
       // explicitly here:
       setPhase('idle');
       setLiveTokens({ committed: [], tentative: [] });
-      void getNotchApi().resize('idle');
       return;
     }
 
@@ -264,7 +265,6 @@ export function useRecordingController() {
     const t = setTimeout(() => {
       setPhase('idle');
       setFinalTranscript(null);
-      void getNotchApi().resize('idle');
     }, FINAL_DISPLAY_MS);
     return () => clearTimeout(t);
   }, [finalTranscript, setPhase, setFinalTranscript]);

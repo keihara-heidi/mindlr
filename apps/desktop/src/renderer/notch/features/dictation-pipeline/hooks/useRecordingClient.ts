@@ -13,7 +13,8 @@ export interface RecordingApi {
 }
 
 export interface NotchApi {
-  resize: (phase: 'idle' | 'recording' | 'post-processing') => Promise<void>;
+  followActiveDisplay: () => Promise<void>;
+  setPillHover: (isHovering: boolean) => Promise<void>;
 }
 
 interface MindlrApi {
