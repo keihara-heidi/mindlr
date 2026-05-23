@@ -24,12 +24,12 @@ const CHANNEL_MODELS_PROGRESS = 'models.progress';
 const CHANNEL_RECORDING_START = 'recording.start';
 const CHANNEL_RECORDING_STOP = 'recording.stop';
 const CHANNEL_AUDIO_FRAME = 'audio.frame';
-const CHANNEL_NOTCH_RESIZE = 'notch.resize';
+const CHANNEL_NOTCH_FOLLOW_ACTIVE_DISPLAY = 'notch.followActiveDisplay';
+const CHANNEL_NOTCH_SET_PILL_HOVER = 'notch.setPillHover';
 
 type DbChangeListener = (event: DbChangeEvent) => void;
 type ModelsProgressListener = (event: ModelsProgressEvent) => void;
 type AudioFrameListener = (payload: { sampleRate: number; samples: ArrayBuffer }) => void;
-type NotchPhase = 'idle' | 'recording' | 'post-processing';
 
 const api = {
   db: {
@@ -72,7 +72,10 @@ const api = {
     },
   },
   notch: {
-    resize: (phase: NotchPhase): Promise<void> => ipcRenderer.invoke(CHANNEL_NOTCH_RESIZE, { phase }),
+    followActiveDisplay: (): Promise<void> =>
+      ipcRenderer.invoke(CHANNEL_NOTCH_FOLLOW_ACTIVE_DISPLAY),
+    setPillHover: (isHovering: boolean): Promise<void> =>
+      ipcRenderer.invoke(CHANNEL_NOTCH_SET_PILL_HOVER, { isHovering }),
   },
 } as const;
 
