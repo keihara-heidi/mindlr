@@ -119,10 +119,8 @@ export const AudioFrameEventSchema = z.object({
 });
 export type AudioFrameEvent = z.infer<typeof AudioFrameEventSchema>;
 
-export const NotchResizeRequestSchema = z.object({
-  phase: z.enum(['idle', 'recording', 'post-processing']),
-});
-export type NotchResizeRequest = z.infer<typeof NotchResizeRequestSchema>;
+export const NotchSetPillHoverRequestSchema = z.object({ isHovering: z.boolean() });
+export type NotchSetPillHoverRequest = z.infer<typeof NotchSetPillHoverRequestSchema>;
 
 export const IPC_CHANNELS = {
   dbQuery: 'db.query',
@@ -136,5 +134,6 @@ export const IPC_CHANNELS = {
   recordingStart: 'recording.start',
   recordingStop: 'recording.stop',
   audioFrame: 'audio.frame',
-  notchResize: 'notch.resize',
+  notchFollowActiveDisplay: 'notch.followActiveDisplay',
+  notchSetPillHover: 'notch.setPillHover',
 } as const;
