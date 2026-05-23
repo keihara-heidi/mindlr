@@ -4,18 +4,21 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
-const IDLE_WIDTH = 220;
-const IDLE_HEIGHT = 40;
-const TOP_OFFSET = 8;
+// Constant-size notch window. The inner pill animates between idle /
+// recording / post-processing within these bounds via Tailwind transitions.
+// Outside the visible pill the window is fully transparent and click-through.
+export const NOTCH_WIDTH = 640;
+export const NOTCH_HEIGHT = 64;
+export const NOTCH_TOP_OFFSET = 8;
 
 export function createNotchWindow(): BrowserWindow {
   const { workArea } = screen.getPrimaryDisplay();
-  const x = Math.round(workArea.x + workArea.width / 2 - IDLE_WIDTH / 2);
-  const y = workArea.y + TOP_OFFSET;
+  const x = Math.round(workArea.x + workArea.width / 2 - NOTCH_WIDTH / 2);
+  const y = workArea.y + NOTCH_TOP_OFFSET;
 
   const win = new BrowserWindow({
-    width: IDLE_WIDTH,
-    height: IDLE_HEIGHT,
+    width: NOTCH_WIDTH,
+    height: NOTCH_HEIGHT,
     x,
     y,
     frame: false,
@@ -30,7 +33,6 @@ export function createNotchWindow(): BrowserWindow {
     show: false,
     alwaysOnTop: true,
     type: 'panel',
-    vibrancy: 'under-window',
     backgroundColor: '#00000000',
     webPreferences: {
       preload: join(__dirname, '../preload/notch.cjs'),
@@ -42,7 +44,10 @@ export function createNotchWindow(): BrowserWindow {
 
   win.setAlwaysOnTop(true, 'screen-saver');
   win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
-  win.setIgnoreMouseEvents(false);
+  // Default: transparent area passes clicks through to whatever's behind.
+  // The renderer's usePillHover hook toggles this off while the cursor is
+  // inside the visible pill via the `notch.setPillHover` IPC channel.
+  win.setIgnoreMouseEvents(true, { forward: true });
 
   win.once('ready-to-show', () => {
     win.show();

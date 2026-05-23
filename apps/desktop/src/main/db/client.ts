@@ -22,6 +22,7 @@ export function initDb(): BetterSQLite3Database<typeof schema> {
   _db = drizzle(_sqlite, { schema });
 
   runBootstrapDdl(_sqlite);
+  seedDefaults(_sqlite);
 
   return _db;
 }
@@ -79,4 +80,21 @@ function runBootstrapDdl(sqlite: Database.Database) {
       created_at INTEGER NOT NULL
     );
   `);
+}
+
+/**
+ * Seed default settings rows if absent. Idempotent — uses INSERT OR IGNORE
+ * so existing user values are never overwritten.
+ *
+ * `notchPosition` is wired now so future drag-to-reposition (Phase 4+) edits
+ * the same row without schema churn. v1 always honours `auto-center-active-
+ * display` regardless of what's stored.
+ */
+function seedDefaults(sqlite: Database.Database) {
+  const now = Date.now();
+  sqlite
+    .prepare(
+      `INSERT OR IGNORE INTO settings (key, value, platform, updated_at) VALUES (?, ?, ?, ?)`,
+    )
+    .run('notchPosition', JSON.stringify({ mode: 'auto-center-active-display' }), 'macos', now);
 }
