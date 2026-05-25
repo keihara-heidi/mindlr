@@ -11,6 +11,7 @@ import { getCatalog } from '@main/models/catalog.js';
 import { downloadModel } from '@main/models/downloader.js';
 import { removeRepoDir } from '@main/models/store.js';
 import { getSqlite } from '@main/db/client.js';
+import { dbChanges } from '@main/db/changes.js';
 
 const inFlight = new Map<string, AbortController>();
 
@@ -74,6 +75,8 @@ export function registerModelsHandlers(): void {
       win.webContents.send(IPC_CHANNELS.dbChange, { table: 'models', op: 'delete' });
       win.webContents.send(IPC_CHANNELS.dbChange, { table: 'settings', op: 'delete' });
     }
+    dbChanges.emit({ table: 'models', op: 'delete' });
+    dbChanges.emit({ table: 'settings', op: 'delete' });
     return { deleted: true };
   });
 }
@@ -128,6 +131,8 @@ async function runDownload(repoId: string, controller: AbortController): Promise
       win.webContents.send(IPC_CHANNELS.dbChange, { table: 'models', op: 'insert' });
       win.webContents.send(IPC_CHANNELS.dbChange, { table: 'settings', op: 'upsert' });
     }
+    dbChanges.emit({ table: 'models', op: 'insert' });
+    dbChanges.emit({ table: 'settings', op: 'upsert' });
     broadcast({
       repoId,
       totalDownloaded: totalBytes,

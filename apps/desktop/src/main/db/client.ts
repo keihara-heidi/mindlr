@@ -92,9 +92,22 @@ function runBootstrapDdl(sqlite: Database.Database) {
  */
 function seedDefaults(sqlite: Database.Database) {
   const now = Date.now();
-  sqlite
-    .prepare(
-      `INSERT OR IGNORE INTO settings (key, value, platform, updated_at) VALUES (?, ?, ?, ?)`,
-    )
-    .run('notchPosition', JSON.stringify({ mode: 'auto-center-active-display' }), 'macos', now);
+  const insert = sqlite.prepare(
+    `INSERT OR IGNORE INTO settings (key, value, platform, updated_at) VALUES (?, ?, ?, ?)`,
+  );
+  insert.run(
+    'notchPosition',
+    JSON.stringify({ mode: 'auto-center-active-display' }),
+    'macos',
+    now,
+  );
+  // Phase 5 — global hotkey trigger key (Right Option by default, matching
+  // Apple's own dictation shortcut) and text-injection method.
+  insert.run(
+    'hotkey.combo',
+    JSON.stringify({ modifiers: [], key: 'AltRight' }),
+    'macos',
+    now,
+  );
+  insert.run('injection.method', 'paste', 'macos', now);
 }

@@ -10,6 +10,7 @@ import {
 } from '@mindlr/ipc-contracts';
 import { TABLES } from '@mindlr/db-schema';
 import { getSqlite } from '@main/db/client.js';
+import { dbChanges } from '@main/db/changes.js';
 
 const SQL_TABLE_NAMES: Record<TableName, string> = {
   settings: 'settings',
@@ -98,6 +99,9 @@ function broadcastChange(event: DbChangeEvent): void {
   for (const win of BrowserWindow.getAllWindows()) {
     win.webContents.send(IPC_CHANNELS.dbChange, event);
   }
+  // Also fan out to main-process-local subscribers (e.g. the hotkey
+  // listener reloading the active combo when settings change).
+  dbChanges.emit(event);
 }
 
 export function registerDbHandlers(): void {
