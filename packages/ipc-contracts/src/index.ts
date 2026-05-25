@@ -122,6 +122,48 @@ export type AudioFrameEvent = z.infer<typeof AudioFrameEventSchema>;
 export const NotchSetPillHoverRequestSchema = z.object({ isHovering: z.boolean() });
 export type NotchSetPillHoverRequest = z.infer<typeof NotchSetPillHoverRequestSchema>;
 
+export const HotkeyModifierSchema = z.enum(['cmd', 'ctrl', 'alt', 'shift']);
+export type HotkeyModifier = z.infer<typeof HotkeyModifierSchema>;
+
+export const HotkeyComboSchema = z.object({
+  modifiers: z.array(HotkeyModifierSchema),
+  key: z.string(),
+});
+export type HotkeyCombo = z.infer<typeof HotkeyComboSchema>;
+
+export const HotkeyCaptureKeyEventSchema = z.object({
+  modifiers: z.array(HotkeyModifierSchema),
+  key: z.string(),
+  // True when at least one non-modifier key is pressed — signals "complete combo".
+  hasKey: z.boolean(),
+});
+export type HotkeyCaptureKeyEvent = z.infer<typeof HotkeyCaptureKeyEventSchema>;
+
+export const RecordingTriggerEventSchema = z.object({
+  kind: z.enum(['start', 'stop']),
+});
+export type RecordingTriggerEvent = z.infer<typeof RecordingTriggerEventSchema>;
+
+export const InjectTextRequestSchema = z.object({ text: z.string() });
+export type InjectTextRequest = z.infer<typeof InjectTextRequestSchema>;
+
+export const InjectionMethodSchema = z.enum(['paste', 'simType']);
+export type InjectionMethod = z.infer<typeof InjectionMethodSchema>;
+
+export const PermissionStatusSchema = z.enum(['authorized', 'denied', 'not-determined']);
+export type PermissionStatus = z.infer<typeof PermissionStatusSchema>;
+
+export const PermissionsStatusResponseSchema = z.object({
+  microphone: PermissionStatusSchema,
+  accessibility: PermissionStatusSchema,
+});
+export type PermissionsStatusResponse = z.infer<typeof PermissionsStatusResponseSchema>;
+
+export const PermissionsOpenRequestSchema = z.object({
+  kind: z.enum(['microphone', 'accessibility']),
+});
+export type PermissionsOpenRequest = z.infer<typeof PermissionsOpenRequestSchema>;
+
 export const IPC_CHANNELS = {
   dbQuery: 'db.query',
   dbMutate: 'db.mutate',
@@ -136,4 +178,11 @@ export const IPC_CHANNELS = {
   audioFrame: 'audio.frame',
   notchFollowActiveDisplay: 'notch.followActiveDisplay',
   notchSetPillHover: 'notch.setPillHover',
+  hotkeyCaptureStart: 'hotkey.capture.start',
+  hotkeyCaptureEnd: 'hotkey.capture.end',
+  hotkeyCaptureKey: 'hotkey.capture.key',
+  recordingTrigger: 'recording.trigger',
+  injectText: 'inject.text',
+  permissionsStatus: 'permissions.status',
+  permissionsOpen: 'permissions.open',
 } as const;
