@@ -5,8 +5,10 @@ import type {
   DbMutateRequest,
   DbMutateResponse,
   DbChangeEvent,
+  HotkeyCaptureKeyEvent,
   ModelsListCatalogResponse,
   ModelsProgressEvent,
+  PermissionsStatusResponse,
 } from '@mindlr/ipc-contracts';
 
 // Inlined to keep this preload self-contained (Electron sandboxed preloads
@@ -20,9 +22,15 @@ const CHANNEL_MODELS_DOWNLOAD_START = 'models.download.start';
 const CHANNEL_MODELS_DOWNLOAD_CANCEL = 'models.download.cancel';
 const CHANNEL_MODELS_DELETE = 'models.delete';
 const CHANNEL_MODELS_PROGRESS = 'models.progress';
+const CHANNEL_HOTKEY_CAPTURE_START = 'hotkey.capture.start';
+const CHANNEL_HOTKEY_CAPTURE_END = 'hotkey.capture.end';
+const CHANNEL_HOTKEY_CAPTURE_KEY = 'hotkey.capture.key';
+const CHANNEL_PERMISSIONS_STATUS = 'permissions.status';
+const CHANNEL_PERMISSIONS_OPEN = 'permissions.open';
 
 type DbChangeListener = (event: DbChangeEvent) => void;
 type ModelsProgressListener = (event: ModelsProgressEvent) => void;
+type HotkeyCaptureKeyListener = (event: HotkeyCaptureKeyEvent) => void;
 
 const api = {
   db: {
@@ -51,6 +59,22 @@ const api = {
       ipcRenderer.on(CHANNEL_MODELS_PROGRESS, wrapped);
       return () => ipcRenderer.off(CHANNEL_MODELS_PROGRESS, wrapped);
     },
+  },
+  hotkey: {
+    captureStart: (): Promise<void> => ipcRenderer.invoke(CHANNEL_HOTKEY_CAPTURE_START),
+    captureEnd: (): Promise<void> => ipcRenderer.invoke(CHANNEL_HOTKEY_CAPTURE_END),
+    onCaptureKey: (listener: HotkeyCaptureKeyListener): (() => void) => {
+      const wrapped = (_e: Electron.IpcRendererEvent, event: HotkeyCaptureKeyEvent) =>
+        listener(event);
+      ipcRenderer.on(CHANNEL_HOTKEY_CAPTURE_KEY, wrapped);
+      return () => ipcRenderer.off(CHANNEL_HOTKEY_CAPTURE_KEY, wrapped);
+    },
+  },
+  permissions: {
+    status: (): Promise<PermissionsStatusResponse> =>
+      ipcRenderer.invoke(CHANNEL_PERMISSIONS_STATUS),
+    open: (kind: 'microphone' | 'accessibility'): Promise<void> =>
+      ipcRenderer.invoke(CHANNEL_PERMISSIONS_OPEN, { kind }),
   },
 } as const;
 

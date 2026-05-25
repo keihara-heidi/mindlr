@@ -7,7 +7,9 @@ import type {
   DbChangeEvent,
   ModelsListCatalogResponse,
   ModelsProgressEvent,
+  PermissionsStatusResponse,
   RecordingStartResponse,
+  RecordingTriggerEvent,
 } from '@mindlr/ipc-contracts';
 
 // Inlined to keep this preload self-contained (Electron sandboxed preloads
@@ -26,10 +28,14 @@ const CHANNEL_RECORDING_STOP = 'recording.stop';
 const CHANNEL_AUDIO_FRAME = 'audio.frame';
 const CHANNEL_NOTCH_FOLLOW_ACTIVE_DISPLAY = 'notch.followActiveDisplay';
 const CHANNEL_NOTCH_SET_PILL_HOVER = 'notch.setPillHover';
+const CHANNEL_RECORDING_TRIGGER = 'recording.trigger';
+const CHANNEL_INJECT_TEXT = 'inject.text';
+const CHANNEL_PERMISSIONS_STATUS = 'permissions.status';
 
 type DbChangeListener = (event: DbChangeEvent) => void;
 type ModelsProgressListener = (event: ModelsProgressEvent) => void;
 type AudioFrameListener = (payload: { sampleRate: number; samples: ArrayBuffer }) => void;
+type RecordingTriggerListener = (event: RecordingTriggerEvent) => void;
 
 const api = {
   db: {
@@ -70,12 +76,26 @@ const api = {
       ipcRenderer.on(CHANNEL_AUDIO_FRAME, wrapped);
       return () => ipcRenderer.off(CHANNEL_AUDIO_FRAME, wrapped);
     },
+    onTrigger: (listener: RecordingTriggerListener): (() => void) => {
+      const wrapped = (_e: Electron.IpcRendererEvent, event: RecordingTriggerEvent) =>
+        listener(event);
+      ipcRenderer.on(CHANNEL_RECORDING_TRIGGER, wrapped);
+      return () => ipcRenderer.off(CHANNEL_RECORDING_TRIGGER, wrapped);
+    },
   },
   notch: {
     followActiveDisplay: (): Promise<void> =>
       ipcRenderer.invoke(CHANNEL_NOTCH_FOLLOW_ACTIVE_DISPLAY),
     setPillHover: (isHovering: boolean): Promise<void> =>
       ipcRenderer.invoke(CHANNEL_NOTCH_SET_PILL_HOVER, { isHovering }),
+  },
+  inject: {
+    text: (text: string): Promise<{ injected: boolean }> =>
+      ipcRenderer.invoke(CHANNEL_INJECT_TEXT, { text }),
+  },
+  permissions: {
+    status: (): Promise<PermissionsStatusResponse> =>
+      ipcRenderer.invoke(CHANNEL_PERMISSIONS_STATUS),
   },
 } as const;
 
