@@ -1,2 +1,1 @@
-// Phase 5 — hotkey capture UI.
-export {};
+export { HotkeysPage } from '@settings/features/hotkeys/components/HotkeysPage';

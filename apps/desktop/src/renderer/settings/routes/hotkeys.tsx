@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { TypographyMuted } from '@shared/components/typography';
+import { HotkeysPage } from '@settings/features/hotkeys';
 
 export const Route = createFileRoute('/hotkeys')({
-  component: () => <TypographyMuted>Hotkeys — coming in Phase 5.</TypographyMuted>,
+  component: HotkeysPage,
 });
